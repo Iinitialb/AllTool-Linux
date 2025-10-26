@@ -5,6 +5,35 @@ import subprocess
 import shutil
 import time
 
+#--------------------- Add AllTool to PATH ---------------------
+def add_bin_to_path():
+    home = os.path.expanduser("~")
+    bin_path = os.path.join(home, "bin")
+    shell = os.environ.get("SHELL", "")
+
+    # Detect which shell config to modify
+    if "zsh" in shell:
+        rc_file = os.path.join(home, ".zshrc")
+    elif "bash" in shell:
+        rc_file = os.path.join(home, ".bashrc")
+    else:
+        rc_file = os.path.join(home, ".profile")  # fallback
+
+    # Check if the PATH line already exists
+    line = 'export PATH="$HOME/bin:$PATH"'
+    with open(rc_file, "a+") as f:
+        f.seek(0)
+        content = f.read()
+        if line not in content:
+            f.write("\n# Add ~/bin to PATH for alltool\n")
+            f.write(line + "\n")
+            print(f"✅ Added ~/bin to PATH in {rc_file}")
+        else:
+            print(f"ℹ️ PATH already includes ~/bin in {rc_file}")
+
+    print("🔄 Run this to apply changes now:")
+    print(f"   source {rc_file}")
+
 # ---------------- Utility Functions ----------------
 def run_command(cmd, description="", show_output=True):
     """Run shell command with optional progress and output"""
@@ -264,6 +293,7 @@ def main():
     install_python_packages(selected_packages=python_packages)
 
     setup_alltool()
+    add_bin_to_path()
     print("\n✅ Installation process finished!")
     print("💡 Run: source ~/.bashrc (or ~/.zshrc) to update your PATH.")
     delete_installer()
