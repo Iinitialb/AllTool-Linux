@@ -97,7 +97,6 @@ def setup_alltool():
     if os.path.exists(script_path):
         run_command(["cp", script_path, target_path], "Copying AllTools.py to ~/bin/alltool")
         run_command(["chmod", "+x", target_path], "Making alltool executable")
-        run_command(["rm", "-f", script_path], "Removing original AllTools.py from current directory")
     else:
         print("❌ AllTools.py not found in current directory")
         return False
@@ -242,7 +241,7 @@ def main():
         
     else:
         print("Invalid choice. Exiting installer.")
-    
+    run_command(["rm", "-f", script_path], "Removing original AllTools.py from current directory")
     print("\n✅ Installation completed successfully!")
     print("You may need to restart your terminal or run 'source ~/.bashrc' (or equivalent) to apply PATH changes.")
     print("Use: alltool help to get started with AllTools")
