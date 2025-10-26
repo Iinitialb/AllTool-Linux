@@ -121,15 +121,20 @@ def setup_alltool():
     if os.path.exists(script_path):
         shutil.copy(script_path, target_path)
         os.chmod(target_path, 0o755)
-        print(f"✅ AllTools.py copied to {target_path}")
+        print(f"✅ AllTools.py copied to {target_path} and made executable")
     else:
         print("❌ AllTools.py not found in current directory")
         return False
 
+    # Add ~/bin to PATH automatically
     path_line = 'export PATH="$HOME/bin:$PATH"'
     os.environ["PATH"] = os.path.expanduser("~/bin:") + os.environ["PATH"]
 
-    shell_configs = {"bash": "~/.bashrc", "zsh": "~/.zshrc", "fish": "~/.config/fish/config.fish"}
+    shell_configs = {
+        "bash": "~/.bashrc",
+        "zsh": "~/.zshrc",
+        "fish": "~/.config/fish/config.fish"
+    }
     shell = os.environ.get("SHELL", "").split("/")[-1]
     config_file = os.path.expanduser(shell_configs.get(shell, "~/.bashrc"))
 
@@ -139,16 +144,19 @@ def setup_alltool():
                 content = f.read()
             if path_line not in content:
                 with open(config_file, "a") as f:
-                    f.write(f"\n# Added by alltool installer\n{path_line}\n")
+                    f.write(f"\n# Added by AllTools installer\n{path_line}\n")
                 print(f"✅ PATH added to {config_file} for future sessions")
+            else:
+                print(f"ℹ️ PATH already exists in {config_file}")
         else:
             with open(config_file, "w") as f:
-                f.write(f"# Shell config created by alltool installer\n{path_line}\n")
+                f.write(f"# Shell config created by AllTools installer\n{path_line}\n")
             print(f"✅ Created {config_file} with PATH configuration")
     except Exception as e:
         print(f"❌ Error updating PATH in {config_file}: {e}")
 
-    print("⚠️ Note: Run 'source {config_file}' or restart terminal to apply PATH changes.")
+    # No prompts; fully automated
+    print(f"⚠️ PATH updated. To apply in this shell, run: source {config_file}")
     return True
 
 # ---------------- Distribution Detection ----------------
