@@ -23,12 +23,34 @@ jobs:
           python-version: "3.x"
           cache: pip
 
-      - name: Install dependencies
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            mpv \
+            speedtest-cli \
+            ntfs-3g \
+            e2fsprogs \
+            dosfstools \
+            ffmpeg \
+            yt-dlp \
+            coreutils \
+            inxi \
+            power-profiles-daemon \
+            nodejs \
+            npm \
+            ruby \
+            php \
+            openjdk-11-jdk \
+            g++ \
+            python3-pip \
+            python3-requests \
+            python3-bs4
+
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          # Ensure packaging is installed for version parsing
-          pip install packaging
+          pip install beautifulsoup4 requests packaging
 
       - name: Run linting
         run: |
@@ -55,4 +77,3 @@ jobs:
           echo "✅ All checks passed. Deploying from Stable branch..."
           # Add your deployment commands here
           # e.g., rsync, docker build & push, or SSH deploy
-
