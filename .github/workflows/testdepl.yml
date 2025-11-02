@@ -27,19 +27,17 @@ jobs:
           pip install pylint flake8 pytest
 
       - name: Run Pylint
-        run: pylint AllTool/AllTool.py
+        run: |
+          pylint AllTool/AllTool.py
 
       - name: Run Flake8
-        run: flake8 AllTool/AllTool.py
+        run: |
+          flake8 AllTool/AllTool.py
 
       - name: Run Pytest
-        run: pytest AllTool/AllTool.py
+        run: |
+          pytest AllTool/AllTool.py
 
-      - name: Stop deployment if errors found
-        if: failure()
-        run: echo "Tests failed. Deployment aborted." && exit 1
-
-      # Add your deployment step here if all tests pass
       - name: Deploy AllTool
         if: success()
         run: echo "Deploying AllTool.py..."
