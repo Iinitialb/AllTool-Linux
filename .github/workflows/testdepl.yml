@@ -1,20 +1,45 @@
-name: AllTool Project
+name: Test and Deploy AllTool
 
 on:
-    pull_request:
-        branches:
-            - Stable
+  push:
+    paths:
+      - 'AllTool/AllTool.py'
+  pull_request:
+    paths:
+      - 'AllTool/AllTool.py'
 
 jobs:
-    test:
-        runs-on: ubuntu-latest
-        container:
-            image: python:3.13
-        steps:
-            - user: actions/checkout@v3
-            with:
-                python-version: '3.13'
-            - run: pip install -r requirements.txt
-            - run: python3 AllTool.py
-            - run: echo "AllTool Test Completed"
-            - run: python3 AllToolInstaller.py
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint flake8 pytest
+
+      - name: Run Pylint
+        run: pylint AllTool/AllTool.py
+
+      - name: Run Flake8
+        run: flake8 AllTool/AllTool.py
+
+      - name: Run Pytest
+        run: pytest AllTool/AllTool.py
+
+      - name: Stop deployment if errors found
+        if: failure()
+        run: echo "Tests failed. Deployment aborted." && exit 1
+
+      # Add your deployment step here if all tests pass
+      - name: Deploy AllTool
+        if: success()
+        run: echo "Deploying AllTool.py..."
