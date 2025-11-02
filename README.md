@@ -82,7 +82,7 @@ A helper script for **installing system packages and self-deletion**.
   - Delete installer after installation ✅ or keep it ℹ️.
 
 - **Command Runner**
-  - `run_command(cmd, description)` 🔧: Run system commands with progress messages and success/failure notifications.
+  - `run` 🔧: Run system commands with progress messages and success/failure notifications.
 
 - **System Packages Installation**
   - Supports major distributions:
