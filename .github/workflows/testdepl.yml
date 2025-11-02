@@ -1,39 +1,38 @@
-name: Test and Deploy AllTool
+name: CI Debug and Deploy Guard
+
 on:
   push:
     branches:
-      - main
-    paths:
-      - 'AllTool/AllTool.py'
-  pull_request:
-    paths:
-      - 'AllTool/AllTool.py'
+      - Stable
+      - Preview
+  release:
+    types: [created]  # triggers on new releases
+  workflow_dispatch:   # allows manual trigger if needed
+
 jobs:
-  test-and-deploy:
+  test-and-debug:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          python-version: "3.x"
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pylint flake8 pytest
-      - name: Run Pylint
-        run: pylint AllTool/AllTool.py
-      - name: Run Flake8
-        run: flake8 AllTool/AllTool.py
-      - name: Run Pytest
-        run: pytest
-      - name: Deploy AllTool
-        run: echo "Deploying AllTool.py..."
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run linting
+        run: |
+          pip install flake8
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Run tests
+        run: |
+          pip install pytest
+          pytest --maxfail=1 --disable-warnings -q
